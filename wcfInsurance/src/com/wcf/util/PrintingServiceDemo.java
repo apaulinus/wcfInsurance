@@ -17,6 +17,14 @@ import javax.print.event.PrintJobAdapter;
 import javax.print.event.PrintJobEvent;
 
 public class PrintingServiceDemo {
+	
+	/**
+	 * 
+	 * print: method to print the file record to default printer.
+	 * @param file: file to be printed
+	 * @throws PrintException: Exception to be handled by the calling method
+	 * @throws IOException: Exception to be handled by the calling program
+	 */
 	public void print(String file) throws PrintException, IOException{
 		PrintService ps = PrintServiceLookup.lookupDefaultPrintService();
 		

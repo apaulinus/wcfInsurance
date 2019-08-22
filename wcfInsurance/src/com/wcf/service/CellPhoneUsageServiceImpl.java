@@ -24,20 +24,40 @@ import com.wcf.model.CellPhoneUsageReportDetail;
 import com.wcf.model.EmployeeCellPhone;
 import com.wcf.util.PrintingServiceDemo;
 
-public class CellPhoneUsageServiceImpl implements CellPhoneUsageService {
+public class CellPhoneUsageServiceImpl implements CellPhoneUsageService, Cloneable {
 	
-	CellPhoneUsageDao cellPhoneUsageDao = new CellPhoneUsageDaoImpl();
+	CellPhoneUsageDao cellPhoneUsageDao;
 	final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 	final String file = "c:/temp/samplefile.txt";
 	File theDir = new File("c:/temp/");
 	
+	
+	public CellPhoneUsageDao getCellPhoneUsageDao() {
+		return cellPhoneUsageDao;
+	}
+
+	public void setCellPhoneUsageDao(CellPhoneUsageDao cellPhoneUsageDao) {
+		this.cellPhoneUsageDao = cellPhoneUsageDao;
+	}
+
+	public CellPhoneUsageServiceImpl() {
+		cellPhoneUsageDao = new CellPhoneUsageDaoImpl();
+	}
+	
 	@Override
 	public CellPhoneUsageServiceImpl clone() throws CloneNotSupportedException {
 		//Deep Copy
-		CellPhoneUsageServiceImpl css = new CellPhoneUsageServiceImpl();
+		CellPhoneUsageServiceImpl css = (CellPhoneUsageServiceImpl) super.clone();
+		css.setCellPhoneUsageDao((CellPhoneUsageDao)css.getCellPhoneUsageDao().clone());
 		return css;
 	}
 	
+	/**
+	 * 
+	 * Method to write to txt file
+	 * 
+	 * @param cellPhoneUsageMap A map of records to write to txt file, then sent to the printer.
+	 */
 	public void writeToFile(Map<String, Object> cellPhoneUsageMap) {
 
 		if (!theDir.exists()) {
@@ -76,6 +96,15 @@ public class CellPhoneUsageServiceImpl implements CellPhoneUsageService {
 		}
 	}
 	
+	/**
+	 * 
+	 * Method to write the header information to txt file.
+	 * 
+	 * @param header: map of header information to write to txt file.
+	 * @param writer: buffered writer that does the write to the txt file.
+	 * @param decimalFormat: A format to write double values in a two decimal place. 
+	 * @throws IOException: Exception thrown to the calling method to handle.
+	 */
 	private static void writeHeaderToFile(Map<String, Object> header, BufferedWriter writer, 
 			DecimalFormat decimalFormat) throws IOException{
 		writer.write("Report Run Date: "+ LocalDate.now());
@@ -96,6 +125,16 @@ public class CellPhoneUsageServiceImpl implements CellPhoneUsageService {
 		
 	}
 	
+	/**
+	 * 
+	 * Method to write the detail report information to txt file
+	 * 
+	 * @param cellPhoneUsageByModel: map of grouped cell phone monthly usages by month
+	 * @param monthYear: set of the month and year information used in grouping the records
+	 * @param writer: buffered writer for writing to txt file
+	 * @param decimalFormat: format to write doubles in two decimal places 
+	 * @throws IOException: Exception to be returned to the calling method to handle
+	 */
 	private static void writeCellPhoneUsageDetailToFile(Map<String, List<CellPhoneUsageDetail>> cellPhoneUsageByModel,
 			Set<String> monthYear, BufferedWriter writer, DecimalFormat decimalFormat) throws IOException{
 		for(String k : cellPhoneUsageByModel.keySet()) {
@@ -137,6 +176,13 @@ public class CellPhoneUsageServiceImpl implements CellPhoneUsageService {
 		}
 	}
 	
+	/**
+	 * 
+	 * method to help group the cell phone usage detail in a way to make it present able.
+	 * 
+	 * @param cellPhoneUsageByMonth: map of cell phone usages per month to be re-arranged for presentation.
+	 * @param cellPhoneUsageReportDetails: list of cellphone usage by month to be returned for reporting.
+	 */
 	private static void getCellPhoneUsageReportDetail(Map<String,List<CellPhoneUsageDetail>> cellPhoneUsageByMonth,
 			List<CellPhoneUsageReportDetail> cellPhoneUsageReportDetails) {
 
@@ -175,6 +221,10 @@ public class CellPhoneUsageServiceImpl implements CellPhoneUsageService {
 	    }
 	}
 	
+	/**
+	 * 
+	 * @return retval: cell phone usage records grouped by model as well as by month 
+	 */
 	public Map<String, Object> getCellPhoneUsagesByMonth(){
 		List<EmployeeCellPhone> employeeCellPhones = cellPhoneUsageDao.retrieveCellPhone();
 		List<CellPhoneUsageByMonth> cellPhoneUsageByMonths = cellPhoneUsageDao.retrieveCellPhoneUsageByMonth();

@@ -15,8 +15,19 @@ import com.opencsv.CSVReaderBuilder;
 import com.wcf.model.CellPhoneUsageByMonth;
 import com.wcf.model.EmployeeCellPhone;
 
-public class CellPhoneUsageDaoImpl implements CellPhoneUsageDao{
+public class CellPhoneUsageDaoImpl implements CellPhoneUsageDao, Cloneable{
 	
+	@Override
+	public CellPhoneUsageDaoImpl clone() throws CloneNotSupportedException {
+		return (CellPhoneUsageDaoImpl) super.clone();
+	}
+	
+	/**
+	 * 
+	 * A method to retrieve list of cell phones from csv file
+	 * 
+	 * @return employeeCellPhones list of cell phone records retrieved from the csv
+	 */
 	public List<EmployeeCellPhone> retrieveCellPhone() {
 		
 		String csvFilename = "/backend/resources/data/CellPhone.csv";
@@ -53,6 +64,12 @@ public class CellPhoneUsageDaoImpl implements CellPhoneUsageDao{
 		return employeeCellPhones;
 	}
 	
+	/**
+	 * 
+	 * A method to retrieve list of cell phone usages per month from csv file
+	 * 
+	 * @return cellPhoneUsageByMonths list of cell phone usages per month retrieved from the csv
+	 */
 	public List<CellPhoneUsageByMonth> retrieveCellPhoneUsageByMonth() {
 		
 		String csvFilename = "/backend/resources/data/CellPhoneUsageByMonth.csv";
